@@ -1,0 +1,216 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="scheme" default="all">
+  
+  
+  <property file="build.properties"/>
+  <!-- Uncomment the following property if no tests compilation is needed -->
+  <!-- 
+  <property name="skip.tests" value="true"/>
+   -->
+  
+  <!-- Compiler options -->
+  
+  <property name="compiler.debug" value="on"/>
+  <property name="compiler.generate.no.warnings" value="off"/>
+  <property name="compiler.args" value=""/>
+  <property name="compiler.max.memory" value="700m"/>
+  <patternset id="ignored.files">
+    <exclude name="**/CVS/**"/>
+    <exclude name="**/SCCS/**"/>
+    <exclude name="**/RCS/**"/>
+    <exclude name="**/rcs/**"/>
+    <exclude name="**/.DS_Store/**"/>
+    <exclude name="**/.svn/**"/>
+    <exclude name="**/.sbas/**"/>
+    <exclude name="**/.IJI.*/**"/>
+    <exclude name="**/vssver.scc/**"/>
+    <exclude name="**/vssver2.scc/**"/>
+    <exclude name="**/*.pyc/**"/>
+    <exclude name="**/*.pyo/**"/>
+    <exclude name="**/.git/**"/>
+    <exclude name="**/*.hprof/**"/>
+    <exclude name="**/_svn/**"/>
+    <exclude name="**/.hg/**"/>
+    <exclude name="**/*.lib/**"/>
+    <exclude name="**/*~/**"/>
+    <exclude name="**/__pycache__/**"/>
+    <exclude name="**/.bundle/**"/>
+    <exclude name="**/*.rbc/**"/>
+    <exclude name="**/*.o/**"/>
+    <exclude name="**/*.obj/**"/>
+  </patternset>
+  <patternset id="library.patterns">
+    <include name="*.war"/>
+    <include name="*.ear"/>
+    <include name="*.apk"/>
+    <include name="*.zip"/>
+    <include name="*.swc"/>
+    <include name="*.ane"/>
+    <include name="*.egg"/>
+    <include name="*.jar"/>
+  </patternset>
+  <patternset id="compiler.resources">
+    <include name="**/?*.properties"/>
+    <include name="**/?*.xml"/>
+    <include name="**/?*.gif"/>
+    <include name="**/?*.png"/>
+    <include name="**/?*.jpeg"/>
+    <include name="**/?*.jpg"/>
+    <include name="**/?*.html"/>
+    <include name="**/?*.dtd"/>
+    <include name="**/?*.tld"/>
+    <include name="**/?*.scm"/>
+  </patternset>
+  
+  
+  <!-- Project Libraries -->
+  
+  <path id="library.unnamed.classpath">
+    <pathelement location="${basedir}/lib/junit3/junit-3.8.2.jar"/>
+  </path>
+  
+  
+  <!-- Global Libraries -->
+  
+  
+  <!-- Application Server Libraries -->
+  
+  <!-- Modules -->
+  
+  
+  <!-- Module scheme -->
+  
+  <dirname property="module.scheme.basedir" file="${ant.file}"/>
+  
+  
+  
+  <property name="compiler.args.scheme" value="-encoding UTF-8 -source 1.5 ${compiler.args}"/>
+  
+  <property name="scheme.output.dir" value="${module.scheme.basedir}/out/production/scheme"/>
+  <property name="scheme.testoutput.dir" value="${module.scheme.basedir}/out/test/scheme"/>
+  
+  <path id="scheme.module.bootclasspath">
+    <!-- Paths to be included in compilation bootclasspath -->
+  </path>
+  
+  <path id="scheme.module.production.classpath">
+    <path refid="library.unnamed.classpath"/>
+  </path>
+  
+  <path id="scheme.runtime.production.module.classpath">
+    <pathelement location="${scheme.output.dir}"/>
+    <path refid="library.unnamed.classpath"/>
+  </path>
+  
+  <path id="scheme.module.classpath">
+    <pathelement location="${scheme.output.dir}"/>
+    <path refid="library.unnamed.classpath"/>
+  </path>
+  
+  <path id="scheme.runtime.module.classpath">
+    <pathelement location="${scheme.testoutput.dir}"/>
+    <pathelement location="${scheme.output.dir}"/>
+    <path refid="library.unnamed.classpath"/>
+  </path>
+  
+  
+  <patternset id="excluded.from.module.scheme">
+    <patternset refid="ignored.files"/>
+  </patternset>
+  
+  <patternset id="excluded.from.compilation.scheme">
+    <patternset refid="excluded.from.module.scheme"/>
+  </patternset>
+  
+  <path id="scheme.module.sourcepath">
+    <dirset dir="${module.scheme.basedir}">
+      <include name="src/main/java"/>
+    </dirset>
+  </path>
+  
+  <path id="scheme.module.test.sourcepath">
+    <dirset dir="${module.scheme.basedir}">
+      <include name="src/test/java"/>
+    </dirset>
+  </path>
+  
+  
+  <target name="compile.module.scheme" depends="compile.module.scheme.production,compile.module.scheme.tests" description="Compile module scheme"/>
+  
+  <target name="compile.module.scheme.production" description="Compile module scheme; production classes">
+    <mkdir dir="${scheme.output.dir}"/>
+    <javac destdir="${scheme.output.dir}" debug="${compiler.debug}" nowarn="${compiler.generate.no.warnings}" memorymaximumsize="${compiler.max.memory}" fork="true">
+      <compilerarg line="${compiler.args.scheme}"/>
+      <bootclasspath refid="scheme.module.bootclasspath"/>
+      <classpath refid="scheme.module.production.classpath"/>
+      <src refid="scheme.module.sourcepath"/>
+      <patternset refid="excluded.from.compilation.scheme"/>
+    </javac>
+    
+    <copy todir="${scheme.output.dir}">
+      <fileset dir="${module.scheme.basedir}/src/main/java">
+        <patternset refid="compiler.resources"/>
+        <type type="file"/>
+      </fileset>
+    </copy>
+  </target>
+  
+  <target name="compile.module.scheme.tests" depends="compile.module.scheme.production" description="compile module scheme; test classes" unless="skip.tests">
+    <mkdir dir="${scheme.testoutput.dir}"/>
+    <javac destdir="${scheme.testoutput.dir}" debug="${compiler.debug}" nowarn="${compiler.generate.no.warnings}" memorymaximumsize="${compiler.max.memory}" fork="true">
+      <compilerarg line="${compiler.args.scheme}"/>
+      <bootclasspath refid="scheme.module.bootclasspath"/>
+      <classpath refid="scheme.module.classpath"/>
+      <src refid="scheme.module.test.sourcepath"/>
+      <patternset refid="excluded.from.compilation.scheme"/>
+    </javac>
+    
+    <copy todir="${scheme.testoutput.dir}">
+      <fileset dir="${module.scheme.basedir}/src/test/java">
+        <patternset refid="compiler.resources"/>
+        <type type="file"/>
+      </fileset>
+    </copy>
+  </target>
+  
+  <target name="clean.module.scheme" description="cleanup module">
+    <delete dir="${scheme.output.dir}"/>
+    <delete dir="${scheme.testoutput.dir}"/>
+  </target>
+  
+  <target name="init" description="Build initialization">
+    <!-- Perform any build initialization in this target -->
+  </target>
+  
+  <target name="clean" depends="clean.module.scheme, clean.artifact.scheme:jar" description="cleanup all"/>
+  
+  <target name="build.modules" depends="init, clean, compile.module.scheme" description="build all modules"/>
+  
+  <target name="init.artifacts">
+    <property name="artifacts.temp.dir" value="${basedir}/__artifacts_temp"/>
+    <property name="artifact.output.scheme:jar" value="${basedir}"/>
+    <mkdir dir="${artifacts.temp.dir}"/>
+    <property name="temp.jar.path.scheme.jar" value="${artifacts.temp.dir}/scheme.jar"/>
+  </target>
+  
+  <target name="clean.artifact.scheme:jar" description="clean scheme:jar artifact output">
+    <delete dir="${artifact.output.scheme:jar}"/>
+  </target>
+  
+  <target name="artifact.scheme:jar" depends="init.artifacts, compile.module.scheme" description="Build &#39;scheme:jar&#39; artifact">
+    <mkdir dir="${artifact.output.scheme:jar}"/>
+    <jar destfile="${temp.jar.path.scheme.jar}" duplicate="preserve" filesetmanifest="mergewithoutmain">
+      <zipfileset dir="${scheme.output.dir}"/>
+      <zipfileset file="${basedir}/src/main/META-INF/MANIFEST.MF" prefix="META-INF"/>
+    </jar>
+    <copy file="${temp.jar.path.scheme.jar}" tofile="${artifact.output.scheme:jar}/scheme.jar"/>
+  </target>
+  
+  <target name="build.all.artifacts" depends="artifact.scheme:jar" description="Build all artifacts">
+    
+    <!-- Delete temporary files -->
+    <delete dir="${artifacts.temp.dir}"/>
+  </target>
+  
+  <target name="all" depends="build.modules, build.all.artifacts" description="build all"/>
+</project>
